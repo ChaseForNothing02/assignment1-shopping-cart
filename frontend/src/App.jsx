@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
+
 import "./App.css";
 
 function App() {
+  const [showModal, setShowModal] = useState(false);
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [cart, setCart] = useState([]);
@@ -158,6 +160,13 @@ function App() {
       console.error("Clear cart error:", err);
     }
   };
+  const handleCheckout = () => {
+  setShowToast(true);
+
+  setTimeout(() => {
+      setShowToast(false);
+    }, 1500);
+  };
 
   const totalPrice = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
@@ -181,7 +190,7 @@ function App() {
             Browse products and manage your shopping cart.
           </p>
         </div>
-
+        
         
       </header>
 
@@ -343,14 +352,37 @@ function App() {
                 ))}
               </div>
 
-              <div className="checkout-box">
-                <h3 className="total">Total: ${totalPrice}</h3>
-                <button className="checkout-button">Proceed to Checkout</button>
-              </div>
+                      <div className="checkout-box">
+  <h3 className="total">Total: ${totalPrice}</h3>
+
+  <button
+    className="checkout-button"
+    onClick={() => setShowModal(true)}
+  >
+    Proceed to Checkout
+  </button>
+</div>
             </>
           )}
         </aside>
       </main>
+      {showModal && (
+  <div className="modal-overlay" onClick={() => setShowModal(false)}>
+    <div className="modal simple-modal" onClick={(e) => e.stopPropagation()}>
+      <h2 className="modal-title">Notice</h2>
+      <p className="modal-note centered-note">
+        Checkout is not available in this prototype.
+      </p>
+
+      <button
+        className="modal-button"
+        onClick={() => setShowModal(false)}
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
     </div>
   );
 }
