@@ -11,7 +11,10 @@ function App() {
 
   useEffect(() => {
     fetch("http://localhost:5000/products")
-      .then((res) => res.json())
+      .then((res) => {
+      if (!res.ok) throw new Error("Failed to fetch products");
+      return res.json();
+    })
       .then((data) => {
         setProducts(data);
         setLoading(false);
@@ -24,7 +27,10 @@ function App() {
 
   useEffect(() => {
     fetch("http://localhost:5000/cart")
-      .then((res) => res.json())
+      .then((res) => {
+      if (!res.ok) throw new Error("Failed to fetch cart");
+      return res.json();
+    })
       .then((data) => {
         setCart(data);
       })
