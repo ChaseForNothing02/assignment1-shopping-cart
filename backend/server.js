@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const Product = require("./models/Product");
+const Cart = require("./models/Cart");
 
 const app = express();
 const PORT = 5000;
@@ -39,6 +40,53 @@ app.post("/products", async (req, res) => {
     });
   }
 });
+//get post put delete cart feature
+app.get("/cart", async (req, res) => {
+  try {
+    const items = await Cart.find();
+    res.json(items);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch cart" });
+  }
+});
+app.post("/cart", async (req, res) => {
+  try {
+    const existing = await Cart.findOne({ productId: req.body.productId });
+
+    if (existing) {
+      existing.quantity += 1;
+      await existing.save();
+      return res.json(existing);
+    }
+
+    const newItem = new Cart({ ...req.body, quantity: 1 });
+    const saved = await newItem.save();
+    res.status(201).json(saved);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to add to cart" });
+  }
+});
+app.put("/cart/:id", async (req, res) => {
+  try {
+    const item = await Cart.findByIdAndUpdate(
+      req.params.id,
+      { quantity: req.body.quantity },
+      { new: true }
+    );
+    res.json(item);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update cart" });
+  }
+});
+app.delete("/cart/:id", async (req, res) => {
+  try {
+    await Cart.findByIdAndDelete(req.params.id);
+    res.json({ message: "Deleted" });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to delete" });
+  }
+});
+
 mongoose
   .connect("mongodb://127.0.0.1:27017/shopping-cart")
   .then(() => {
