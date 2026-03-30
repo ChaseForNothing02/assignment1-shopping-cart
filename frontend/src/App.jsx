@@ -178,18 +178,11 @@ function App() {
           <p className="eyebrow">React Shopping Demo</p>
           <h1 className="title">Shopping Cart</h1>
           <p className="subtitle">
-            A polished single-page shopping cart interface with filtering,
-            quantity control, and responsive layout.
+            Browse products and manage your shopping cart.
           </p>
         </div>
 
-        <div className="cart-badge">
-          <span className="cart-badge-icon">🛒</span>
-          <div>
-            <p className="cart-badge-label">Items in Cart</p>
-            <p className="cart-badge-count">{totalItems}</p>
-          </div>
-        </div>
+        
       </header>
 
       <section className="stats-grid">
