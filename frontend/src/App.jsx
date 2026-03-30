@@ -2,14 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import "./App.css";
 
 function App() {
-  const allProducts = [
-    { id: 1, name: "Wireless Mouse", price: 25, image: "🖱️", category: "Accessories" },
-    { id: 2, name: "Mechanical Keyboard", price: 80, image: "⌨️", category: "Accessories" },
-    { id: 3, name: "USB-C Hub", price: 45, image: "🔌", category: "Accessories" },
-    { id: 4, name: "Laptop Stand", price: 35, image: "💻", category: "Office" },
-    { id: 5, name: "Notebook", price: 12, image: "📓", category: "Office" },
-    { id: 6, name: "Desk Lamp", price: 55, image: "💡", category: "Office" },
-  ];
+  
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,15 +12,19 @@ function App() {
   const [addedId, setAddedId] = useState(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setProducts(allProducts);
+  fetch("http://localhost:5000/products")
+    .then((res) => res.json())
+    .then((data) => {
+      setProducts(data);
       setLoading(false);
-    }, 900);
+    })
+    .catch((err) => {
+      console.error("Fetch products error:", err);
+      setLoading(false);
+    });
+}, []);
 
-    return () => clearTimeout(timer);
-  }, []);
-
-  const categories = ["All", ...new Set(allProducts.map((product) => product.category))];
+  const categories = ["All", ...new Set(products.map((p) => p.category))];
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
