@@ -2,8 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import "./App.css";
 
 function App() {
-  
-
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [cart, setCart] = useState([]);
@@ -12,23 +10,34 @@ function App() {
   const [addedId, setAddedId] = useState(null);
 
   useEffect(() => {
-  fetch("http://localhost:5000/products")
-    .then((res) => res.json())
-    .then((data) => {
-      setProducts(data);
-      setLoading(false);
-    })
-    .catch((err) => {
-      console.error("Fetch products error:", err);
-      setLoading(false);
-    });
-}, []);
+    fetch("http://localhost:5000/products")
+      .then((res) => res.json())
+      .then((data) => {
+        setProducts(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Fetch products error:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/cart")
+      .then((res) => res.json())
+      .then((data) => {
+        setCart(data);
+      })
+      .catch((err) => {
+        console.error("Fetch cart error:", err);
+      });
+  }, []);
 
   const categories = ["All", ...new Set(products.map((p) => p.category))];
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
-      const matchesSearch = product.name
+      const matchesSearch = (product.name || "")
         .toLowerCase()
         .includes(searchTerm.toLowerCase());
 
@@ -39,51 +48,109 @@ function App() {
     });
   }, [products, searchTerm, selectedCategory]);
 
-  const addToCart = (product) => {
-    const existingItem = cart.find((item) => item.id === product.id);
-
-    if (existingItem) {
-      setCart(
-        cart.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        )
-      );
-    } else {
-      setCart([...cart, { ...product, quantity: 1 }]);
+  const fetchCart = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/cart");
+      const data = await res.json();
+      setCart(data);
+    } catch (err) {
+      console.error("Refresh cart error:", err);
     }
-
-    setAddedId(product.id);
-    setTimeout(() => {
-      setAddedId(null);
-    }, 700);
   };
 
-  const increaseQuantity = (id) => {
-    setCart(
-      cart.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
+  const addToCart = async (product) => {
+    try {
+      await fetch("http://localhost:5000/cart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          productId: product._id,
+          name: product.name,
+          price: product.price,
+          image: product.image,
+          category: product.category,
+        }),
+      });
+
+      await fetchCart();
+
+      setAddedId(product._id);
+      setTimeout(() => {
+        setAddedId(null);
+      }, 700);
+    } catch (err) {
+      console.error("Add to cart error:", err);
+    }
   };
 
-  const decreaseQuantity = (id) => {
-    setCart(
-      cart
-        .map((item) =>
-          item.id === id ? { ...item, quantity: item.quantity - 1 } : item
-        )
-        .filter((item) => item.quantity > 0)
-    );
+  const increaseQuantity = async (id, currentQuantity) => {
+    try {
+      await fetch(`http://localhost:5000/cart/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          quantity: currentQuantity + 1,
+        }),
+      });
+
+      await fetchCart();
+    } catch (err) {
+      console.error("Increase quantity error:", err);
+    }
   };
 
-  const removeItem = (id) => {
-    setCart(cart.filter((item) => item.id !== id));
+  const decreaseQuantity = async (id, currentQuantity) => {
+    try {
+      if (currentQuantity === 1) {
+        await fetch(`http://localhost:5000/cart/${id}`, {
+          method: "DELETE",
+        });
+      } else {
+        await fetch(`http://localhost:5000/cart/${id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            quantity: currentQuantity - 1,
+          }),
+        });
+      }
+
+      await fetchCart();
+    } catch (err) {
+      console.error("Decrease quantity error:", err);
+    }
   };
 
-  const clearCart = () => {
-    setCart([]);
+  const removeItem = async (id) => {
+    try {
+      await fetch(`http://localhost:5000/cart/${id}`, {
+        method: "DELETE",
+      });
+
+      await fetchCart();
+    } catch (err) {
+      console.error("Remove item error:", err);
+    }
+  };
+
+  const clearCart = async () => {
+    try {
+      for (const item of cart) {
+        await fetch(`http://localhost:5000/cart/${item._id}`, {
+          method: "DELETE",
+        });
+      }
+
+      await fetchCart();
+    } catch (err) {
+      console.error("Clear cart error:", err);
+    }
   };
 
   const totalPrice = cart.reduce(
@@ -95,7 +162,8 @@ function App() {
 
   const uniqueItems = cart.length;
 
-  const isInCart = (id) => cart.some((item) => item.id === id);
+  const isInCart = (productId) =>
+    cart.some((item) => item.productId === productId);
 
   return (
     <div className="page">
@@ -183,21 +251,21 @@ function App() {
           ) : (
             <div className="products-grid">
               {filteredProducts.map((product) => (
-                <div key={product.id} className="card">
+                <div key={product._id} className="card">
                   <div className="product-image">{product.image}</div>
                   <span className="product-category">{product.category}</span>
                   <h3 className="product-name">{product.name}</h3>
                   <p className="price">${product.price}</p>
 
                   <button
-                    className={`add-button ${isInCart(product.id) ? "added" : ""} ${
-                      addedId === product.id ? "pop" : ""
-                    }`}
+                    className={`add-button ${
+                      isInCart(product._id) ? "added" : ""
+                    } ${addedId === product._id ? "pop" : ""}`}
                     onClick={() => addToCart(product)}
                   >
-                    {addedId === product.id
+                    {addedId === product._id
                       ? "Added!"
-                      : isInCart(product.id)
+                      : isInCart(product._id)
                       ? "Add More"
                       : "Add to Cart"}
                   </button>
@@ -234,7 +302,7 @@ function App() {
             <>
               <div className="cart-list">
                 {cart.map((item) => (
-                  <div key={item.id} className="cart-item">
+                  <div key={item._id} className="cart-item">
                     <div className="cart-item-top">
                       <div className="cart-item-icon">{item.image}</div>
                       <div>
@@ -249,14 +317,18 @@ function App() {
                     <div className="controls">
                       <button
                         className="small-button"
-                        onClick={() => decreaseQuantity(item.id)}
+                        onClick={() =>
+                          decreaseQuantity(item._id, item.quantity)
+                        }
                       >
                         -
                       </button>
                       <span className="quantity">{item.quantity}</span>
                       <button
                         className="small-button"
-                        onClick={() => increaseQuantity(item.id)}
+                        onClick={() =>
+                          increaseQuantity(item._id, item.quantity)
+                        }
                       >
                         +
                       </button>
@@ -264,7 +336,7 @@ function App() {
 
                     <button
                       className="remove-button"
-                      onClick={() => removeItem(item.id)}
+                      onClick={() => removeItem(item._id)}
                     >
                       Remove
                     </button>
