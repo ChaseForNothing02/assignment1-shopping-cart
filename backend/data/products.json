@@ -1,0 +1,54 @@
+[{
+  "_id": {
+    "$oid": "69c9cf1b543c8dcbcabb68dd"
+  },
+  "name": "Wireless Mouse",
+  "price": 25,
+  "image": "🖱️",
+  "category": "Accessories"
+},
+{
+  "_id": {
+    "$oid": "69c9f54f543c8dcbcabb68e3"
+  },
+  "name": "Wireless Earbuds",
+  "price": 65,
+  "image": "🎧",
+  "category": "Audio"
+},
+{
+  "_id": {
+    "$oid": "69c9f557543c8dcbcabb68e5"
+  },
+  "name": "Speaker",
+  "price": 95,
+  "image": "🔊",
+  "category": "Audio"
+},
+{
+  "_id": {
+    "$oid": "69c9f566543c8dcbcabb68e7"
+  },
+  "name": "Desk Organizer",
+  "price": 22,
+  "image": "🗂️",
+  "category": "Office"
+},
+{
+  "_id": {
+    "$oid": "69c9f572543c8dcbcabb68e9"
+  },
+  "name": "Portable SSD",
+  "price": 140,
+  "image": "💾",
+  "category": "Accessories"
+},
+{
+  "_id": {
+    "$oid": "69c9f583543c8dcbcabb68eb"
+  },
+  "name": "Gaming Headset",
+  "price": 120,
+  "image": "🎮",
+  "category": "Gaming"
+}]
