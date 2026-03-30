@@ -184,7 +184,7 @@ function App() {
     <div className="page">
       <header className="hero">
         <div className="hero-text">
-          <p className="eyebrow">React Shopping Demo</p>
+          
           <h1 className="title">Shopping Cart</h1>
           <p className="subtitle">
             Browse products and manage your shopping cart.
