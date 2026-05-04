@@ -4,8 +4,8 @@ import { request, saveAuth } from "./api";
 function AuthForm({ onAuthSuccess }) {
   const [mode, setMode] = useState("login");
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("customer@test.com");
-  const [password, setPassword] = useState("123456");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [role, setRole] = useState("customer");
   const [error, setError] = useState("");
 
