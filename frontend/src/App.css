@@ -951,4 +951,166 @@ button:hover {
     flex-direction: column;
     align-items: flex-start;
   }
+  /* Strong mobile responsiveness */
+@media (max-width: 768px) {
+  .page {
+    width: 100%;
+    padding: 18px 12px 28px;
+  }
+
+  .hero {
+    margin-bottom: 18px;
+  }
+
+  .title {
+    font-size: 34px;
+    line-height: 1.1;
+  }
+
+  .subtitle {
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .account-box {
+    width: 100%;
+    margin-top: 16px;
+  }
+
+  .auth-card {
+    width: 100%;
+    margin: 18px 0;
+    padding: 18px;
+    grid-template-columns: 1fr;
+    border-radius: 18px;
+  }
+
+  .auth-card h2 {
+    font-size: 24px;
+  }
+
+  .auth-actions {
+    flex-direction: column;
+  }
+
+  .auth-actions button {
+    width: 100%;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .stat-card {
+    padding: 16px;
+  }
+
+  .main {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .products-section,
+  .cart-section,
+  .admin-section {
+    width: 100%;
+    padding: 18px;
+    border-radius: 18px;
+  }
+
+  .cart-section {
+    position: static;
+  }
+
+  .section-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .products-section h2,
+  .cart-section h2,
+  .admin-header h2 {
+    font-size: 24px;
+  }
+
+  .filters {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .search-input,
+  .category-select {
+    width: 100%;
+  }
+
+  .products-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .card {
+    padding: 18px;
+  }
+
+  .product-image {
+    width: 78px;
+    height: 78px;
+    font-size: 36px;
+  }
+
+  .cart-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .clear-cart-button {
+    width: 100%;
+  }
+
+  .cart-item-top {
+    align-items: center;
+  }
+
+  .controls {
+    justify-content: center;
+  }
+
+  .admin-section {
+    margin: 20px 0 40px;
+  }
+
+  .admin-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .admin-header .clear-cart-button {
+    width: 100%;
+  }
+
+  .admin-user-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .admin-total-box {
+    width: 100%;
+  }
+
+  .admin-item-row {
+    grid-template-columns: 32px 1fr;
+    gap: 8px;
+  }
+
+  .admin-item-row span:nth-child(3),
+  .admin-item-row span:nth-child(4) {
+    grid-column: 2;
+  }
+
+  .modal {
+    max-width: 92vw;
+  }
+}
 }

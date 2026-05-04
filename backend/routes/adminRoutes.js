@@ -20,16 +20,27 @@ router.get("/users", protect, adminOnly, async (req, res) => {
 
 router.get("/carts", protect, adminOnly, async (req, res) => {
   try {
-    const carts = await Cart.find()
+    const carts = await Cart.find({
+      userId: { $exists: true, $ne: null },
+    })
       .populate("userId", "name email role")
       .sort({ createdAt: -1 });
 
     const groupedCarts = carts.reduce((result, item) => {
-      const userKey = item.userId?._id?.toString() || "unknown";
+      if (!item.userId) {
+        return result;
+      }
+
+      const userKey = item.userId._id.toString();
 
       if (!result[userKey]) {
         result[userKey] = {
-          user: item.userId,
+          user: {
+            _id: item.userId._id,
+            name: item.userId.name,
+            email: item.userId.email,
+            role: item.userId.role,
+          },
           items: [],
           totalPrice: 0,
           totalItems: 0,
