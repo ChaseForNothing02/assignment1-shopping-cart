@@ -101,6 +101,7 @@ function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [addedId, setAddedId] = useState(null);
+  const [productView, setProductView] = useState("comfortable");
   const [user, setUser] = useState(getSavedUser());
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -271,6 +272,9 @@ function App() {
   const isInCart = (productId) =>
     cart.some((item) => String(item.productId) === String(productId));
 
+  const productGridClass =
+    productView === "compact" ? "products-grid compact-grid" : "products-grid";
+
   return (
     <div className="page">
       <header className="hero">
@@ -331,6 +335,24 @@ function App() {
                 Browse products and add them to your cart.
               </p>
             </div>
+
+            <div className="view-toggle" aria-label="Product view selector">
+              <button
+                type="button"
+                className={productView === "comfortable" ? "active" : ""}
+                onClick={() => setProductView("comfortable")}
+              >
+                Comfort
+              </button>
+
+              <button
+                type="button"
+                className={productView === "compact" ? "active" : ""}
+                onClick={() => setProductView("compact")}
+              >
+                Compact
+              </button>
+            </div>
           </div>
 
           <div className="filters">
@@ -356,7 +378,7 @@ function App() {
           </div>
 
           {loading ? (
-            <div className="products-grid">
+            <div className={productGridClass}>
               {Array.from({ length: 6 }).map((_, index) => (
                 <div key={index} className="card skeleton-card">
                   <div className="skeleton skeleton-image"></div>
@@ -370,7 +392,7 @@ function App() {
           ) : filteredProducts.length === 0 ? (
             <p className="empty-products">No products match your search.</p>
           ) : (
-            <div className="products-grid">
+            <div className={productGridClass}>
               {filteredProducts.map((product) => (
                 <div key={product._id} className="card">
                   <div className="product-image">{product.image}</div>
