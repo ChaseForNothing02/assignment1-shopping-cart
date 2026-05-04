@@ -1,6 +1,97 @@
 import { useEffect, useMemo, useState } from "react";
-
 import "./App.css";
+import AuthForm from "./AuthForm";
+import { clearAuth, getSavedUser, request } from "./api";
+
+function AdminDashboard({ user }) {
+  const [adminCarts, setAdminCarts] = useState([]);
+  const [loadingAdmin, setLoadingAdmin] = useState(false);
+  const [adminError, setAdminError] = useState("");
+
+  const fetchAdminCarts = async () => {
+    setLoadingAdmin(true);
+    setAdminError("");
+
+    try {
+      const data = await request("/admin/carts");
+      setAdminCarts(data);
+    } catch (error) {
+      setAdminError(error.message);
+    } finally {
+      setLoadingAdmin(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user?.role === "admin") {
+      fetchAdminCarts();
+    }
+  }, [user]);
+
+  if (user?.role !== "admin") {
+    return null;
+  }
+
+  return (
+    <section className="admin-section">
+      <div className="admin-header">
+        <div>
+          <p className="section-note">Admin Dashboard</p>
+          <h2>All Users' Shopping Carts</h2>
+        </div>
+
+        <button className="clear-cart-button" onClick={fetchAdminCarts}>
+          Refresh
+        </button>
+      </div>
+
+      {loadingAdmin ? (
+        <p className="section-note">Loading admin cart data...</p>
+      ) : adminError ? (
+        <p className="error-message">{adminError}</p>
+      ) : adminCarts.length === 0 ? (
+        <div className="empty-cart-box">
+          <div className="empty-cart-icon">📦</div>
+          <p className="empty-cart-title">No user carts found</p>
+          <p className="empty-cart-desc">
+            Customer cart activity will appear here.
+          </p>
+        </div>
+      ) : (
+        <div className="admin-cart-list">
+          {adminCarts.map((cartGroup, index) => (
+            <div key={cartGroup.user?._id || index} className="admin-cart-card">
+              <div className="admin-user-row">
+                <div>
+                  <h3>{cartGroup.user?.name || "Unknown User"}</h3>
+                  <p className="section-note">
+                    {cartGroup.user?.email || "No email available"}
+                  </p>
+                </div>
+
+                <div className="admin-total-box">
+                  <strong>${cartGroup.totalPrice}</strong>
+                  <span>{cartGroup.totalItems} items</span>
+                </div>
+              </div>
+
+              <div className="admin-items">
+                {cartGroup.items.map((item) => (
+                  <div key={item._id} className="admin-item-row">
+                    <span>{item.image}</span>
+                    <span>{item.name}</span>
+                    <span>Qty: {item.quantity}</span>
+                    <span>${item.price * item.quantity}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
 
 function App() {
   const [showModal, setShowModal] = useState(false);
@@ -10,36 +101,56 @@ function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [addedId, setAddedId] = useState(null);
+  const [user, setUser] = useState(getSavedUser());
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:5000/products")
-      .then((res) => {
-      if (!res.ok) throw new Error("Failed to fetch products");
-      return res.json();
-    })
-      .then((data) => {
-        setProducts(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Fetch products error:", err);
-        setLoading(false);
-      });
+    fetchProducts();
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:5000/cart")
-      .then((res) => {
-      if (!res.ok) throw new Error("Failed to fetch cart");
-      return res.json();
-    })
-      .then((data) => {
-        setCart(data);
-      })
-      .catch((err) => {
-        console.error("Fetch cart error:", err);
-      });
-  }, []);
+    if (user) {
+      fetchCart();
+    } else {
+      setCart([]);
+    }
+  }, [user]);
+
+  const fetchProducts = async () => {
+    setLoading(true);
+
+    try {
+      const data = await request("/products");
+      setProducts(data);
+    } catch (error) {
+      console.error("Fetch products error:", error);
+      setErrorMessage(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchCart = async () => {
+    if (!user) {
+      setCart([]);
+      return;
+    }
+
+    try {
+      const data = await request("/cart");
+      setCart(data);
+    } catch (error) {
+      console.error("Refresh cart error:", error);
+      setErrorMessage(error.message);
+    }
+  };
+
+  const handleLogout = () => {
+    clearAuth();
+    setUser(null);
+    setCart([]);
+    setErrorMessage("");
+  };
 
   const categories = ["All", ...new Set(products.map((p) => p.category))];
 
@@ -56,29 +167,19 @@ function App() {
     });
   }, [products, searchTerm, selectedCategory]);
 
-  const fetchCart = async () => {
-    try {
-      const res = await fetch("http://localhost:5000/cart");
-      const data = await res.json();
-      setCart(data);
-    } catch (err) {
-      console.error("Refresh cart error:", err);
-    }
-  };
-
   const addToCart = async (product) => {
+    if (!user) {
+      setErrorMessage("Please login before adding products to your cart.");
+      return;
+    }
+
     try {
-      await fetch("http://localhost:5000/cart", {
+      setErrorMessage("");
+
+      await request("/cart", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({
           productId: product._id,
-          name: product.name,
-          price: product.price,
-          image: product.image,
-          category: product.category,
         }),
       });
 
@@ -88,41 +189,37 @@ function App() {
       setTimeout(() => {
         setAddedId(null);
       }, 700);
-    } catch (err) {
-      console.error("Add to cart error:", err);
+    } catch (error) {
+      console.error("Add to cart error:", error);
+      setErrorMessage(error.message);
     }
   };
 
   const increaseQuantity = async (id, currentQuantity) => {
     try {
-      await fetch(`http://localhost:5000/cart/${id}`, {
+      await request(`/cart/${id}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({
           quantity: currentQuantity + 1,
         }),
       });
 
       await fetchCart();
-    } catch (err) {
-      console.error("Increase quantity error:", err);
+    } catch (error) {
+      console.error("Increase quantity error:", error);
+      setErrorMessage(error.message);
     }
   };
 
   const decreaseQuantity = async (id, currentQuantity) => {
     try {
       if (currentQuantity === 1) {
-        await fetch(`http://localhost:5000/cart/${id}`, {
+        await request(`/cart/${id}`, {
           method: "DELETE",
         });
       } else {
-        await fetch(`http://localhost:5000/cart/${id}`, {
+        await request(`/cart/${id}`, {
           method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
           body: JSON.stringify({
             quantity: currentQuantity - 1,
           }),
@@ -130,42 +227,36 @@ function App() {
       }
 
       await fetchCart();
-    } catch (err) {
-      console.error("Decrease quantity error:", err);
+    } catch (error) {
+      console.error("Decrease quantity error:", error);
+      setErrorMessage(error.message);
     }
   };
 
   const removeItem = async (id) => {
     try {
-      await fetch(`http://localhost:5000/cart/${id}`, {
+      await request(`/cart/${id}`, {
         method: "DELETE",
       });
 
       await fetchCart();
-    } catch (err) {
-      console.error("Remove item error:", err);
+    } catch (error) {
+      console.error("Remove item error:", error);
+      setErrorMessage(error.message);
     }
   };
 
   const clearCart = async () => {
     try {
-      for (const item of cart) {
-        await fetch(`http://localhost:5000/cart/${item._id}`, {
-          method: "DELETE",
-        });
-      }
+      await request("/cart", {
+        method: "DELETE",
+      });
 
       await fetchCart();
-    } catch (err) {
-      console.error("Clear cart error:", err);
+    } catch (error) {
+      console.error("Clear cart error:", error);
+      setErrorMessage(error.message);
     }
-  };
-  const handleCheckout = () => {
-  setShowToast(true);
-
-  setTimeout(() => {
-      setShowToast(false);
-    }, 1500);
   };
 
   const totalPrice = cart.reduce(
@@ -178,31 +269,53 @@ function App() {
   const uniqueItems = cart.length;
 
   const isInCart = (productId) =>
-    cart.some((item) => item.productId === productId);
+    cart.some((item) => String(item.productId) === String(productId));
 
   return (
     <div className="page">
       <header className="hero">
         <div className="hero-text">
-          
           <h1 className="title">Shopping Cart</h1>
           <p className="subtitle">
-            Browse products and manage your shopping cart.
+            Browse products, login, and manage your shopping cart.
           </p>
         </div>
-        
-        
+
+        <div className="account-box">
+          {user ? (
+            <>
+              <p className="account-name">Hi, {user.name}</p>
+              <p className="account-role">{user.role}</p>
+              <button className="logout-button" onClick={handleLogout}>
+                Logout
+              </button>
+            </>
+          ) : (
+            <p className="section-note">Not logged in</p>
+          )}
+        </div>
       </header>
+
+      {!user && <AuthForm onAuthSuccess={setUser} />}
+
+      {errorMessage && (
+        <div className="notice-box">
+          <p>{errorMessage}</p>
+          <button onClick={() => setErrorMessage("")}>Dismiss</button>
+        </div>
+      )}
 
       <section className="stats-grid">
         <div className="stat-card">
           <p className="stat-label">Products</p>
           <h3 className="stat-value">{loading ? "--" : filteredProducts.length}</h3>
         </div>
+
         <div className="stat-card">
           <p className="stat-label">Unique Cart Items</p>
           <h3 className="stat-value">{uniqueItems}</h3>
         </div>
+
         <div className="stat-card">
           <p className="stat-label">Current Total</p>
           <h3 className="stat-value">${totalPrice}</h3>
@@ -271,7 +384,9 @@ function App() {
                     } ${addedId === product._id ? "pop" : ""}`}
                     onClick={() => addToCart(product)}
                   >
-                    {addedId === product._id
+                    {!user
+                      ? "Login to Add"
+                      : addedId === product._id
                       ? "Added!"
                       : isInCart(product._id)
                       ? "Add More"
@@ -298,7 +413,15 @@ function App() {
             <p className="summary-value">{totalItems}</p>
           </div>
 
-          {cart.length === 0 ? (
+          {!user ? (
+            <div className="empty-cart-box">
+              <div className="empty-cart-icon">🔐</div>
+              <p className="empty-cart-title">Login required</p>
+              <p className="empty-cart-desc">
+                Please login to view and manage your personal cart.
+              </p>
+            </div>
+          ) : cart.length === 0 ? (
             <div className="empty-cart-box">
               <div className="empty-cart-icon">🛍️</div>
               <p className="empty-cart-title">Your cart is empty</p>
@@ -331,7 +454,9 @@ function App() {
                       >
                         -
                       </button>
+
                       <span className="quantity">{item.quantity}</span>
+
                       <button
                         className="small-button"
                         onClick={() =>
@@ -352,37 +477,40 @@ function App() {
                 ))}
               </div>
 
-                      <div className="checkout-box">
-  <h3 className="total">Total: ${totalPrice}</h3>
+              <div className="checkout-box">
+                <h3 className="total">Total: ${totalPrice}</h3>
 
-  <button
-    className="checkout-button"
-    onClick={() => setShowModal(true)}
-  >
-    Proceed to Checkout
-  </button>
-</div>
+                <button
+                  className="checkout-button"
+                  onClick={() => setShowModal(true)}
+                >
+                  Proceed to Checkout
+                </button>
+              </div>
             </>
           )}
         </aside>
       </main>
-      {showModal && (
-  <div className="modal-overlay" onClick={() => setShowModal(false)}>
-    <div className="modal simple-modal" onClick={(e) => e.stopPropagation()}>
-      <h2 className="modal-title">Notice</h2>
-      <p className="modal-note centered-note">
-        Checkout is not available in this prototype.
-      </p>
 
-      <button
-        className="modal-button"
-        onClick={() => setShowModal(false)}
-      >
-        Close
-      </button>
-    </div>
-  </div>
-)}
+      <AdminDashboard user={user} />
+
+      {showModal && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal simple-modal" onClick={(e) => e.stopPropagation()}>
+            <h2 className="modal-title">Notice</h2>
+            <p className="modal-note centered-note">
+              Checkout is not available in this prototype.
+            </p>
+
+            <button
+              className="modal-button"
+              onClick={() => setShowModal(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
