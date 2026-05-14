@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 
+import { useNavigate } from "react-router-dom";
+
 import "../App.css";
 
 import {
@@ -18,6 +20,8 @@ function Admin() {
     useState("");
 
   const user = getSavedUser();
+
+  const navigate = useNavigate();
 
   const fetchAdminCarts = async () => {
     setLoadingAdmin(true);
@@ -101,10 +105,10 @@ function Admin() {
   };
 
   const goToProducts = (userId) => {
-  navigate(
-    `/products?adminUser=${userId}`
-  );
-};
+    navigate(
+      `/products?adminUser=${userId}`
+    );
+  };
 
   if (!user) {
     return (
@@ -234,14 +238,18 @@ function Admin() {
                       </span>
                     </div>
                   </div>
-<button
-  className="add-product-button"
-  onClick={() =>
-  goToProducts(cartGroup.user._id)
-}
->
-  + Add Product
-</button>
+
+                  <button
+                    className="add-product-button"
+                    onClick={() =>
+                      goToProducts(
+                        cartGroup.user._id
+                      )
+                    }
+                  >
+                    + Add Product
+                  </button>
+
                   <div className="admin-items">
                     {cartGroup.items.map(
                       (item) => (
@@ -311,8 +319,6 @@ function Admin() {
                           >
                             Remove
                           </button>
-
-                          
                         </div>
                       )
                     )}

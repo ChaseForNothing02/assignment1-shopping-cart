@@ -111,13 +111,17 @@ router.put("/:id", protect, async (req, res) => {
       });
     }
 
+    let query = {
+      _id: req.params.id,
+    };
+
+    if (req.user.role !== "admin") {
+      query.userId = req.user._id;
+    }
+
     const cartItem =
       await Cart.findOneAndUpdate(
-        {
-          _id: req.params.id,
-
-          userId: req.user._id,
-        },
+        query,
 
         {
           quantity,
@@ -125,7 +129,6 @@ router.put("/:id", protect, async (req, res) => {
 
         {
           new: true,
-
           runValidators: true,
         }
       );
@@ -149,12 +152,16 @@ router.put("/:id", protect, async (req, res) => {
 
 router.delete("/:id", protect, async (req, res) => {
   try {
-    const cartItem =
-      await Cart.findOneAndDelete({
-        _id: req.params.id,
+    let query = {
+      _id: req.params.id,
+    };
 
-        userId: req.user._id,
-      });
+    if (req.user.role !== "admin") {
+      query.userId = req.user._id;
+    }
+
+    const cartItem =
+      await Cart.findOneAndDelete(query);
 
     if (!cartItem) {
       return res.status(404).json({
