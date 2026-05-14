@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 
-import { useNavigate } from "react-router-dom";
-
 import "../App.css";
 
 import {
@@ -20,8 +18,6 @@ function Admin() {
     useState("");
 
   const user = getSavedUser();
-
-  const navigate = useNavigate();
 
   const fetchAdminCarts = async () => {
     setLoadingAdmin(true);
@@ -46,69 +42,6 @@ function Admin() {
       fetchAdminCarts();
     }
   }, []);
-
-  const increaseQuantity = async (
-    id,
-    currentQuantity
-  ) => {
-    try {
-      await request(`/admin/cart/${id}`, {
-        method: "PUT",
-        body: JSON.stringify({
-          quantity:
-            currentQuantity + 1,
-        }),
-      });
-
-      fetchAdminCarts();
-    } catch (error) {
-      setAdminError(error.message);
-    }
-  };
-
-  const decreaseQuantity = async (
-    id,
-    currentQuantity
-  ) => {
-    try {
-      if (currentQuantity <= 1) {
-        await removeItem(id);
-      } else {
-        await request(
-          `/admin/cart/${id}`,
-          {
-            method: "PUT",
-            body: JSON.stringify({
-              quantity:
-                currentQuantity - 1,
-            }),
-          }
-        );
-
-        fetchAdminCarts();
-      }
-    } catch (error) {
-      setAdminError(error.message);
-    }
-  };
-
-  const removeItem = async (id) => {
-    try {
-      await request(`/admin/cart/${id}`, {
-        method: "DELETE",
-      });
-
-      fetchAdminCarts();
-    } catch (error) {
-      setAdminError(error.message);
-    }
-  };
-
-  const goToProducts = (userId) => {
-    navigate(
-      `/products?adminUser=${userId}`
-    );
-  };
 
   if (!user) {
     return (
@@ -239,17 +172,6 @@ function Admin() {
                     </div>
                   </div>
 
-                  <button
-                    className="add-product-button"
-                    onClick={() =>
-                      goToProducts(
-                        cartGroup.user._id
-                      )
-                    }
-                  >
-                    + Add Product
-                  </button>
-
                   <div className="admin-items">
                     {cartGroup.items.map(
                       (item) => (
@@ -274,51 +196,21 @@ function Admin() {
                                 }{" "}
                                 each
                               </p>
+
+                              <p className="admin-quantity-text">
+                                Quantity:{" "}
+                                {
+                                  item.quantity
+                                }
+                              </p>
                             </div>
                           </div>
 
-                          <div className="controls">
-                            <button
-                              className="small-button"
-                              onClick={() =>
-                                decreaseQuantity(
-                                  item._id,
-                                  item.quantity
-                                )
-                              }
-                            >
-                              -
-                            </button>
-
-                            <span className="admin-quantity">
-                              {
-                                item.quantity
-                              }
-                            </span>
-
-                            <button
-                              className="small-button"
-                              onClick={() =>
-                                increaseQuantity(
-                                  item._id,
-                                  item.quantity
-                                )
-                              }
-                            >
-                              +
-                            </button>
+                          <div className="admin-subtotal">
+                            Subtotal: $
+                            {item.price *
+                              item.quantity}
                           </div>
-
-                          <button
-                            className="remove-button"
-                            onClick={() =>
-                              removeItem(
-                                item._id
-                              )
-                            }
-                          >
-                            Remove
-                          </button>
                         </div>
                       )
                     )}
