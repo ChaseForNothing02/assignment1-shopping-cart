@@ -5,6 +5,7 @@ import {
 } from "react";
 
 import {
+  useNavigate,
   useSearchParams,
 } from "react-router-dom";
 
@@ -13,6 +14,8 @@ import "../App.css";
 import { request } from "../api";
 
 function Products() {
+  const navigate = useNavigate();
+
   const [searchParams] =
     useSearchParams();
 
@@ -107,9 +110,6 @@ function Products() {
 
         body: JSON.stringify({
           productId: product._id,
-
-          adminUserId:
-            adminUserId || null,
         }),
       });
 
@@ -141,9 +141,8 @@ function Products() {
             <h2>Products</h2>
 
             <p className="section-note">
-              {adminUserId
-                ? "Adding products for selected user."
-                : "Browse products and add them to your cart."}
+              Browse products and add them
+              to your cart.
             </p>
           </div>
 
@@ -252,49 +251,60 @@ function Products() {
             search.
           </p>
         ) : (
-          <div className={productGridClass}>
-            {filteredProducts.map(
-              (product) => (
-                <div
-                  key={product._id}
-                  className="card"
-                >
-                  <div className="product-image">
-                    {product.image}
-                  </div>
-
-                  <span className="product-category">
-                    {product.category}
-                  </span>
-
-                  <h3 className="product-name">
-                    {product.name}
-                  </h3>
-
-                  <p className="price">
-                    ${product.price}
-                  </p>
-
-                  <button
-                    className={`add-button ${
-                      addedId ===
-                      product._id
-                        ? "pop"
-                        : ""
-                    }`}
-                    onClick={() =>
-                      addToCart(product)
-                    }
+          <>
+            <div className={productGridClass}>
+              {filteredProducts.map(
+                (product) => (
+                  <div
+                    key={product._id}
+                    className="card"
                   >
-                    {addedId ===
-                    product._id
-                      ? "Added!"
-                      : "Add to Cart"}
-                  </button>
-                </div>
-              )
-            )}
-          </div>
+                    <div className="product-image">
+                      {product.image}
+                    </div>
+
+                    <span className="product-category">
+                      {product.category}
+                    </span>
+
+                    <h3 className="product-name">
+                      {product.name}
+                    </h3>
+
+                    <p className="price">
+                      ${product.price}
+                    </p>
+
+                    <button
+                      className={`add-button ${
+                        addedId ===
+                        product._id
+                          ? "pop"
+                          : ""
+                      }`}
+                      onClick={() =>
+                        addToCart(product)
+                      }
+                    >
+                      {addedId ===
+                      product._id
+                        ? "Added!"
+                        : "Add to Cart"}
+                    </button>
+                  </div>
+                )
+              )}
+            </div>
+
+            <button
+              className="view-cart-button"
+              onClick={() =>
+                navigate("/cart")
+              }
+            >
+              View My Cart
+            </button>
+          </>
         )}
       </section>
     </div>
