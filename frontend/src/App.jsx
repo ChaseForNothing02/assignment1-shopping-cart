@@ -1,4 +1,6 @@
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+
+import Navbar from "./components/Navbar";
 
 import Home from "./pages/Home";
 import Products from "./pages/Products";
@@ -9,13 +11,7 @@ import Admin from "./pages/Admin";
 function App() {
   return (
     <>
-      <nav>
-        <Link to="/">Home</Link> |{" "}
-        <Link to="/products">Products</Link> |{" "}
-        <Link to="/cart">Cart</Link> |{" "}
-        <Link to="/login">Login</Link> |{" "}
-        <Link to="/admin">Admin</Link>
-      </nav>
+      <Navbar />
 
       <Routes>
         <Route path="/" element={<Home />} />
