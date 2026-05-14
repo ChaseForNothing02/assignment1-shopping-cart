@@ -19,10 +19,26 @@ function App() {
 
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/products" element={<Products />} />
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/admin" element={<Admin />} />
+
+        <Route
+          path="/products"
+          element={<Products />}
+        />
+
+        <Route
+          path="/cart"
+          element={<Cart />}
+        />
+
+        <Route
+          path="/login"
+          element={<Login />}
+        />
+
+        <Route
+          path="/admin"
+          element={<Admin />}
+        />
       </Routes>
     </>
   );
