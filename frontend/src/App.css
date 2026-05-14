@@ -1562,3 +1562,61 @@ button:hover {
 
   text-transform: uppercase;
 }
+.admin-section {
+  width: 100%;
+  max-width: 420px;
+}
+
+.admin-cart-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.admin-cart-card {
+  background: white;
+  border-radius: 28px;
+  padding: 20px;
+  box-shadow: 0 10px 30px
+    rgba(80, 80, 180, 0.08);
+}
+
+.admin-user-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.admin-total-box {
+  text-align: right;
+}
+
+.admin-total-box strong {
+  display: block;
+  font-size: 22px;
+}
+
+.admin-total-box span {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.admin-items {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-item-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  padding: 16px;
+}
+
+.admin-item-top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}

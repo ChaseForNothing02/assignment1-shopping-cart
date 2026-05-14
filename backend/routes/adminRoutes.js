@@ -63,4 +63,66 @@ router.get("/carts", protect, adminOnly, async (req, res) => {
   }
 });
 
+router.put(
+  "/cart/:id",
+  protect,
+  adminOnly,
+  async (req, res) => {
+    try {
+      const cartItem = await Cart.findById(
+        req.params.id
+      );
+
+      if (!cartItem) {
+        return res.status(404).json({
+          message: "Cart item not found.",
+        });
+      }
+
+      cartItem.quantity =
+        req.body.quantity;
+
+      await cartItem.save();
+
+      res.json(cartItem);
+    } catch (error) {
+      res.status(500).json({
+        message:
+          "Failed to update cart item.",
+        error: error.message,
+      });
+    }
+  }
+);
+router.delete(
+  "/cart/:id",
+  protect,
+  adminOnly,
+  async (req, res) => {
+    try {
+      const cartItem = await Cart.findById(
+        req.params.id
+      );
+
+      if (!cartItem) {
+        return res.status(404).json({
+          message: "Cart item not found.",
+        });
+      }
+
+      await cartItem.deleteOne();
+
+      res.json({
+        message:
+          "Cart item removed successfully.",
+      });
+    } catch (error) {
+      res.status(500).json({
+        message:
+          "Failed to remove cart item.",
+        error: error.message,
+      });
+    }
+  }
+);
 module.exports = router;

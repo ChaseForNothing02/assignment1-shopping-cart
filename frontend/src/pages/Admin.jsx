@@ -2,10 +2,14 @@ import { useEffect, useState } from "react";
 
 import "../App.css";
 
-import { getSavedUser, request } from "../api";
+import {
+  getSavedUser,
+  request,
+} from "../api";
 
 function Admin() {
-  const [adminCarts, setAdminCarts] = useState([]);
+  const [adminCarts, setAdminCarts] =
+    useState([]);
 
   const [loadingAdmin, setLoadingAdmin] =
     useState(false);
@@ -21,7 +25,9 @@ function Admin() {
     setAdminError("");
 
     try {
-      const data = await request("/admin/carts");
+      const data = await request(
+        "/admin/carts"
+      );
 
       setAdminCarts(data);
     } catch (error) {
@@ -37,6 +43,63 @@ function Admin() {
     }
   }, []);
 
+  const increaseQuantity = async (
+    id,
+    currentQuantity
+  ) => {
+    try {
+      await request(`/admin/cart/${id}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          quantity:
+            currentQuantity + 1,
+        }),
+      });
+
+      fetchAdminCarts();
+    } catch (error) {
+      setAdminError(error.message);
+    }
+  };
+
+  const decreaseQuantity = async (
+    id,
+    currentQuantity
+  ) => {
+    try {
+      if (currentQuantity <= 1) {
+        await removeItem(id);
+      } else {
+        await request(
+          `/admin/cart/${id}`,
+          {
+            method: "PUT",
+            body: JSON.stringify({
+              quantity:
+                currentQuantity - 1,
+            }),
+          }
+        );
+
+        fetchAdminCarts();
+      }
+    } catch (error) {
+      setAdminError(error.message);
+    }
+  };
+
+  const removeItem = async (id) => {
+    try {
+      await request(`/admin/cart/${id}`, {
+        method: "DELETE",
+      });
+
+      fetchAdminCarts();
+    } catch (error) {
+      setAdminError(error.message);
+    }
+  };
+
   if (!user) {
     return (
       <div className="page">
@@ -50,8 +113,7 @@ function Admin() {
           </p>
 
           <p className="empty-cart-desc">
-            Please login as admin to access
-            this page.
+            Please login as admin.
           </p>
         </div>
       </div>
@@ -71,8 +133,7 @@ function Admin() {
           </p>
 
           <p className="empty-cart-desc">
-            This page is only available for
-            admin users.
+            Admin access only.
           </p>
         </div>
       </div>
@@ -89,7 +150,7 @@ function Admin() {
             </p>
 
             <h2>
-              All Users' Shopping Carts
+              User Shopping Carts
             </h2>
           </div>
 
@@ -103,7 +164,7 @@ function Admin() {
 
         {loadingAdmin ? (
           <p className="section-note">
-            Loading admin cart data...
+            Loading...
           </p>
         ) : adminError ? (
           <p className="error-message">
@@ -116,12 +177,11 @@ function Admin() {
             </div>
 
             <p className="empty-cart-title">
-              No user carts found
+              No carts found
             </p>
 
             <p className="empty-cart-desc">
-              Customer cart activity will
-              appear here.
+              User carts will appear here.
             </p>
           </div>
         ) : (
@@ -138,14 +198,17 @@ function Admin() {
                   <div className="admin-user-row">
                     <div>
                       <h3>
-                        {cartGroup.user?.name ||
-                          "Unknown User"}
+                        {
+                          cartGroup.user
+                            ?.name
+                        }
                       </h3>
 
                       <p className="section-note">
-                        {cartGroup.user
-                          ?.email ||
-                          "No email available"}
+                        {
+                          cartGroup.user
+                            ?.email
+                        }
                       </p>
                     </div>
 
@@ -171,28 +234,70 @@ function Admin() {
                       (item) => (
                         <div
                           key={item._id}
-                          className="admin-item-row"
+                          className="admin-item-card"
                         >
-                          <span>
-                            {item.image}
-                          </span>
+                          <div className="admin-item-top">
+                            <div className="cart-item-icon">
+                              {item.image}
+                            </div>
 
-                          <span>
-                            {item.name}
-                          </span>
+                            <div>
+                              <h4>
+                                {item.name}
+                              </h4>
 
-                          <span>
-                            Qty:{" "}
-                            {
-                              item.quantity
+                              <p className="section-note">
+                                $
+                                {
+                                  item.price
+                                }{" "}
+                                each
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="controls">
+                            <button
+                              className="small-button"
+                              onClick={() =>
+                                decreaseQuantity(
+                                  item._id,
+                                  item.quantity
+                                )
+                              }
+                            >
+                              -
+                            </button>
+
+                            <span className="quantity">
+                              {
+                                item.quantity
+                              }
+                            </span>
+
+                            <button
+                              className="small-button"
+                              onClick={() =>
+                                increaseQuantity(
+                                  item._id,
+                                  item.quantity
+                                )
+                              }
+                            >
+                              +
+                            </button>
+                          </div>
+
+                          <button
+                            className="remove-button"
+                            onClick={() =>
+                              removeItem(
+                                item._id
+                              )
                             }
-                          </span>
-
-                          <span>
-                            $
-                            {item.price *
-                              item.quantity}
-                          </span>
+                          >
+                            Remove
+                          </button>
                         </div>
                       )
                     )}
