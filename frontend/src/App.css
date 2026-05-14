@@ -1718,3 +1718,16 @@ button:hover {
   color: #111827;
   font-size: 28px;
 }
+.admin-quantity-text {
+  color: #111827;
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.admin-subtotal {
+  color: #111827;
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: 18px;
+}
