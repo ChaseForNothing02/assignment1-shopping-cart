@@ -1,20 +1,46 @@
-import { useEffect, useMemo, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+
+import {
+  useSearchParams,
+} from "react-router-dom";
+
 import "../App.css";
 
 import { request } from "../api";
 
 function Products() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [searchParams] =
+    useSearchParams();
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const adminUserId =
+    searchParams.get("adminUser");
 
-  const [addedId, setAddedId] = useState(null);
+  const [products, setProducts] =
+    useState([]);
 
-  const [productView, setProductView] = useState("comfortable");
+  const [loading, setLoading] =
+    useState(true);
 
-  const [errorMessage, setErrorMessage] = useState("");
+  const [searchTerm, setSearchTerm] =
+    useState("");
+
+  const [
+    selectedCategory,
+    setSelectedCategory,
+  ] = useState("All");
+
+  const [addedId, setAddedId] =
+    useState(null);
+
+  const [productView, setProductView] =
+    useState("comfortable");
+
+  const [errorMessage, setErrorMessage] =
+    useState("");
 
   useEffect(() => {
     fetchProducts();
@@ -24,38 +50,66 @@ function Products() {
     setLoading(true);
 
     try {
-      const data = await request("/products");
+      const data = await request(
+        "/products"
+      );
+
       setProducts(data);
     } catch (error) {
-      console.error("Fetch products error:", error);
+      console.error(
+        "Fetch products error:",
+        error
+      );
+
       setErrorMessage(error.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const categories = ["All", ...new Set(products.map((p) => p.category))];
+  const categories = [
+    "All",
+    ...new Set(
+      products.map((p) => p.category)
+    ),
+  ];
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
-      const matchesSearch = (product.name || "")
+      const matchesSearch = (
+        product.name || ""
+      )
         .toLowerCase()
-        .includes(searchTerm.toLowerCase());
+        .includes(
+          searchTerm.toLowerCase()
+        );
 
       const matchesCategory =
         selectedCategory === "All" ||
-        product.category === selectedCategory;
+        product.category ===
+          selectedCategory;
 
-      return matchesSearch && matchesCategory;
+      return (
+        matchesSearch &&
+        matchesCategory
+      );
     });
-  }, [products, searchTerm, selectedCategory]);
+  }, [
+    products,
+    searchTerm,
+    selectedCategory,
+  ]);
 
   const addToCart = async (product) => {
     try {
       await request("/cart", {
         method: "POST",
+
         body: JSON.stringify({
           productId: product._id,
+
+          adminUserId:
+            adminUserId || null,
         }),
       });
 
@@ -65,7 +119,11 @@ function Products() {
         setAddedId(null);
       }, 700);
     } catch (error) {
-      console.error("Add to cart error:", error);
+      console.error(
+        "Add to cart error:",
+        error
+      );
+
       setErrorMessage(error.message);
     }
   };
@@ -83,7 +141,9 @@ function Products() {
             <h2>Products</h2>
 
             <p className="section-note">
-              Browse products and add them to your cart.
+              {adminUserId
+                ? "Adding products for selected user."
+                : "Browse products and add them to your cart."}
             </p>
           </div>
 
@@ -94,9 +154,16 @@ function Products() {
             <button
               type="button"
               className={
-                productView === "comfortable" ? "active" : ""
+                productView ===
+                "comfortable"
+                  ? "active"
+                  : ""
               }
-              onClick={() => setProductView("comfortable")}
+              onClick={() =>
+                setProductView(
+                  "comfortable"
+                )
+              }
             >
               Comfort
             </button>
@@ -104,9 +171,14 @@ function Products() {
             <button
               type="button"
               className={
-                productView === "compact" ? "active" : ""
+                productView ===
+                "compact"
+                  ? "active"
+                  : ""
               }
-              onClick={() => setProductView("compact")}
+              onClick={() =>
+                setProductView("compact")
+              }
             >
               Compact
             </button>
@@ -119,19 +191,30 @@ function Products() {
             type="text"
             placeholder="Search products..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) =>
+              setSearchTerm(e.target.value)
+            }
           />
 
           <select
             className="category-select"
             value={selectedCategory}
-            onChange={(e) => setSelectedCategory(e.target.value)}
+            onChange={(e) =>
+              setSelectedCategory(
+                e.target.value
+              )
+            }
           >
-            {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
+            {categories.map(
+              (category) => (
+                <option
+                  key={category}
+                  value={category}
+                >
+                  {category}
+                </option>
+              )
+            )}
           </select>
         </div>
 
@@ -143,8 +226,13 @@ function Products() {
 
         {loading ? (
           <div className={productGridClass}>
-            {Array.from({ length: 6 }).map((_, index) => (
-              <div key={index} className="card skeleton-card">
+            {Array.from({
+              length: 6,
+            }).map((_, index) => (
+              <div
+                key={index}
+                className="card skeleton-card"
+              >
                 <div className="skeleton skeleton-image"></div>
 
                 <div className="skeleton skeleton-tag"></div>
@@ -157,40 +245,55 @@ function Products() {
               </div>
             ))}
           </div>
-        ) : filteredProducts.length === 0 ? (
+        ) : filteredProducts.length ===
+          0 ? (
           <p className="empty-products">
-            No products match your search.
+            No products match your
+            search.
           </p>
         ) : (
           <div className={productGridClass}>
-            {filteredProducts.map((product) => (
-              <div key={product._id} className="card">
-                <div className="product-image">
-                  {product.image}
-                </div>
-
-                <span className="product-category">
-                  {product.category}
-                </span>
-
-                <h3 className="product-name">
-                  {product.name}
-                </h3>
-
-                <p className="price">${product.price}</p>
-
-                <button
-                  className={`add-button ${
-                    addedId === product._id ? "pop" : ""
-                  }`}
-                  onClick={() => addToCart(product)}
+            {filteredProducts.map(
+              (product) => (
+                <div
+                  key={product._id}
+                  className="card"
                 >
-                  {addedId === product._id
-                    ? "Added!"
-                    : "Add to Cart"}
-                </button>
-              </div>
-            ))}
+                  <div className="product-image">
+                    {product.image}
+                  </div>
+
+                  <span className="product-category">
+                    {product.category}
+                  </span>
+
+                  <h3 className="product-name">
+                    {product.name}
+                  </h3>
+
+                  <p className="price">
+                    ${product.price}
+                  </p>
+
+                  <button
+                    className={`add-button ${
+                      addedId ===
+                      product._id
+                        ? "pop"
+                        : ""
+                    }`}
+                    onClick={() =>
+                      addToCart(product)
+                    }
+                  >
+                    {addedId ===
+                    product._id
+                      ? "Added!"
+                      : "Add to Cart"}
+                  </button>
+                </div>
+              )
+            )}
           </div>
         )}
       </section>

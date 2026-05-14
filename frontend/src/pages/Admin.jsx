@@ -100,6 +100,12 @@ function Admin() {
     }
   };
 
+  const goToProducts = (userId) => {
+  navigate(
+    `/products?adminUser=${userId}`
+  );
+};
+
   if (!user) {
     return (
       <div className="page">
@@ -228,7 +234,14 @@ function Admin() {
                       </span>
                     </div>
                   </div>
-
+<button
+  className="add-product-button"
+  onClick={() =>
+  goToProducts(cartGroup.user._id)
+}
+>
+  + Add Product
+</button>
                   <div className="admin-items">
                     {cartGroup.items.map(
                       (item) => (
@@ -242,7 +255,7 @@ function Admin() {
                             </div>
 
                             <div>
-                              <h4>
+                              <h4 className="admin-product-name">
                                 {item.name}
                               </h4>
 
@@ -269,7 +282,7 @@ function Admin() {
                               -
                             </button>
 
-                            <span className="quantity">
+                            <span className="admin-quantity">
                               {
                                 item.quantity
                               }
@@ -298,6 +311,8 @@ function Admin() {
                           >
                             Remove
                           </button>
+
+                          
                         </div>
                       )
                     )}
