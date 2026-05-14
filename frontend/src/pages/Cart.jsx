@@ -1,12 +1,18 @@
 import { useEffect, useState } from "react";
+
+import { useNavigate } from "react-router-dom";
+
 import "../App.css";
 
 import { request } from "../api";
 
 function Cart() {
+  const navigate = useNavigate();
+
   const [cart, setCart] = useState([]);
 
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] =
+    useState("");
 
   useEffect(() => {
     fetchCart();
@@ -15,17 +21,26 @@ function Cart() {
   const fetchCart = async () => {
     try {
       const data = await request("/cart");
+
       setCart(data);
     } catch (error) {
-      console.error("Refresh cart error:", error);
+      console.error(
+        "Refresh cart error:",
+        error
+      );
+
       setErrorMessage(error.message);
     }
   };
 
-  const increaseQuantity = async (id, currentQuantity) => {
+  const increaseQuantity = async (
+    id,
+    currentQuantity
+  ) => {
     try {
       await request(`/cart/${id}`, {
         method: "PUT",
+
         body: JSON.stringify({
           quantity: currentQuantity + 1,
         }),
@@ -33,12 +48,19 @@ function Cart() {
 
       await fetchCart();
     } catch (error) {
-      console.error("Increase quantity error:", error);
+      console.error(
+        "Increase quantity error:",
+        error
+      );
+
       setErrorMessage(error.message);
     }
   };
 
-  const decreaseQuantity = async (id, currentQuantity) => {
+  const decreaseQuantity = async (
+    id,
+    currentQuantity
+  ) => {
     try {
       if (currentQuantity === 1) {
         await request(`/cart/${id}`, {
@@ -47,6 +69,7 @@ function Cart() {
       } else {
         await request(`/cart/${id}`, {
           method: "PUT",
+
           body: JSON.stringify({
             quantity: currentQuantity - 1,
           }),
@@ -55,7 +78,11 @@ function Cart() {
 
       await fetchCart();
     } catch (error) {
-      console.error("Decrease quantity error:", error);
+      console.error(
+        "Decrease quantity error:",
+        error
+      );
+
       setErrorMessage(error.message);
     }
   };
@@ -68,7 +95,11 @@ function Cart() {
 
       await fetchCart();
     } catch (error) {
-      console.error("Remove item error:", error);
+      console.error(
+        "Remove item error:",
+        error
+      );
+
       setErrorMessage(error.message);
     }
   };
@@ -81,13 +112,18 @@ function Cart() {
 
       await fetchCart();
     } catch (error) {
-      console.error("Clear cart error:", error);
+      console.error(
+        "Clear cart error:",
+        error
+      );
+
       setErrorMessage(error.message);
     }
   };
 
   const totalPrice = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) =>
+      sum + item.price * item.quantity,
     0
   );
 
@@ -113,9 +149,13 @@ function Cart() {
         </div>
 
         <div className="cart-summary">
-          <p className="summary-label">Total Items</p>
+          <p className="summary-label">
+            Total Items
+          </p>
 
-          <p className="summary-value">{totalItems}</p>
+          <p className="summary-value">
+            {totalItems}
+          </p>
         </div>
 
         {errorMessage && (
@@ -126,21 +166,36 @@ function Cart() {
 
         {cart.length === 0 ? (
           <div className="empty-cart-box">
-            <div className="empty-cart-icon">🛍️</div>
+            <div className="empty-cart-icon">
+              🛍️
+            </div>
 
-            <p className="empty-cart-title">
+            <h3 className="empty-cart-title">
               Your cart is empty
-            </p>
+            </h3>
 
             <p className="empty-cart-desc">
-              Add a few items to see them appear here.
+              Add a few items to see them
+              appear here.
             </p>
+
+            <button
+              className="primary-button add-cart-button"
+              onClick={() =>
+                navigate("/products")
+              }
+            >
+              ＋   Add Items
+            </button>
           </div>
         ) : (
           <>
             <div className="cart-list">
               {cart.map((item) => (
-                <div key={item._id} className="cart-item">
+                <div
+                  key={item._id}
+                  className="cart-item"
+                >
                   <div className="cart-item-top">
                     <div className="cart-item-icon">
                       {item.image}
@@ -157,7 +212,8 @@ function Cart() {
 
                       <p className="cart-item-text">
                         Subtotal: $
-                        {item.price * item.quantity}
+                        {item.price *
+                          item.quantity}
                       </p>
                     </div>
                   </div>
@@ -194,7 +250,9 @@ function Cart() {
 
                   <button
                     className="remove-button"
-                    onClick={() => removeItem(item._id)}
+                    onClick={() =>
+                      removeItem(item._id)
+                    }
                   >
                     Remove
                   </button>

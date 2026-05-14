@@ -22,7 +22,7 @@ function Home() {
               </button>
             </Link>
 
-            <Link to="/login">
+            <Link to="/login?mode=register">
               <button className="secondary-button">
                 Register
               </button>

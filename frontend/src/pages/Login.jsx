@@ -1,8 +1,19 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import {
+  useSearchParams,
+  useNavigate,
+} from "react-router-dom";
+
 import { request, saveAuth } from "../api";
+
 import "../App.css";
 
 function Login() {
+  const [searchParams] = useSearchParams();
+
+  const navigate = useNavigate();
+
   const [mode, setMode] = useState("login");
 
   const [name, setName] = useState("");
@@ -15,9 +26,21 @@ function Login() {
 
   const [error, setError] = useState("");
 
-  const [successMessage, setSuccessMessage] = useState("");
+  const [successMessage, setSuccessMessage] =
+    useState("");
 
   const isRegister = mode === "register";
+
+  useEffect(() => {
+    const currentMode =
+      searchParams.get("mode");
+
+    if (currentMode === "register") {
+      setMode("register");
+    } else {
+      setMode("login");
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -53,8 +76,20 @@ function Login() {
       saveAuth(data.token, data.user);
 
       setSuccessMessage(
-        `${mode === "register" ? "Registered" : "Logged in"} successfully!`
+        `${
+          mode === "register"
+            ? "Registered"
+            : "Logged in"
+        } successfully!`
       );
+
+      setTimeout(() => {
+  if (data.user.role === "admin") {
+    navigate("/admin");
+  } else {
+    navigate("/cart");
+  }
+}, 1000);
     } catch (error) {
       console.error(error);
 
@@ -62,40 +97,24 @@ function Login() {
     }
   };
 
-  const useCustomerDemo = () => {
-    setMode("login");
-
-    setEmail("customer@test.com");
-
-    setPassword("123456");
-  };
-
-  const useAdminDemo = () => {
-    setMode("login");
-
-    setEmail("admin@test.com");
-
-    setPassword("123456");
-  };
-
   return (
     <div className="page">
-      <section className="auth-card">
-        <div>
+      <section className="auth-card mobile-auth-card">
+        <div className="auth-header">
           <p className="eyebrow">
-            Account Access
+            EASYBUY ACCOUNT
           </p>
 
           <h2>
             {isRegister
-              ? "Create an account"
-              : "Login to continue"}
+              ? "Create Account"
+              : "Welcome Back"}
           </h2>
 
           <p className="muted">
-            Login enables personal cart management.
-            Admin users can review all users'
-            carts.
+            {isRegister
+              ? "Create your EasyBuy account to start shopping."
+              : "Login to manage your shopping cart easily."}
           </p>
         </div>
 
@@ -106,7 +125,7 @@ function Login() {
           {isRegister && (
             <>
               <label>
-                Name
+                Full Name
 
                 <input
                   value={name}
@@ -118,7 +137,7 @@ function Login() {
               </label>
 
               <label>
-                Role
+                Account Type
 
                 <select
                   value={role}
@@ -139,7 +158,7 @@ function Login() {
           )}
 
           <label>
-            Email
+            Email Address
 
             <input
               value={email}
@@ -159,7 +178,7 @@ function Login() {
                 setPassword(event.target.value)
               }
               type="password"
-              placeholder="At least 6 characters"
+              placeholder="Enter password"
             />
           </label>
 
@@ -179,38 +198,27 @@ function Login() {
             type="submit"
             className="primary-button"
           >
-            {isRegister ? "Register" : "Login"}
+            {isRegister
+              ? "Create Account"
+              : "Login"}
           </button>
         </form>
 
         <div className="auth-actions">
           <button
             type="button"
+            className="switch-auth-button"
             onClick={() =>
-              setMode(
+              navigate(
                 isRegister
-                  ? "login"
-                  : "register"
+                  ? "/login"
+                  : "/login?mode=register"
               )
             }
           >
             {isRegister
               ? "Already have an account? Login"
               : "Need an account? Register"}
-          </button>
-
-          <button
-            type="button"
-            onClick={useCustomerDemo}
-          >
-            Use Customer Demo
-          </button>
-
-          <button
-            type="button"
-            onClick={useAdminDemo}
-          >
-            Use Admin Demo
           </button>
         </div>
       </section>
