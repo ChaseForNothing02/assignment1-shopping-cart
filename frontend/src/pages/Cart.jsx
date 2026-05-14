@@ -265,18 +265,18 @@ function Cart() {
                 Total: ${totalPrice}
               </h3>
 
-              <button className="checkout-button">
-                Proceed to Checkout
-              </button>
-
               <button
-                className="view-products-button"
-                onClick={() =>
-                  navigate("/products")
-                }
-              >
-                View the Products
-              </button>
+  className="view-products-button"
+  onClick={() =>
+    navigate("/products")
+  }
+>
+  ＋ Add Items
+</button>
+
+<button className="checkout-button">
+  Proceed to Checkout
+</button>
             </div>
           </>
         )}
