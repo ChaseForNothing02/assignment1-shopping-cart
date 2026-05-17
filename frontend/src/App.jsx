@@ -8,40 +8,36 @@ import Cart from "./pages/Cart";
 import Login from "./pages/Login";
 import Admin from "./pages/Admin";
 
-import "./App.css";
-
 function App() {
-    return (
-        <>
-            <Navbar />
+  return (
+    <>
+      <Navbar />
 
-            <main className="app-main">
-                <Routes>
-                    <Route path="/" element={<Home />} />
+      <Routes>
+        <Route path="/" element={<Home />} />
 
-                    <Route
-                        path="/products"
-                        element={<Products />}
-                    />
+        <Route
+          path="/products"
+          element={<Products />}
+        />
 
-                    <Route
-                        path="/cart"
-                        element={<Cart />}
-                    />
+        <Route
+          path="/cart"
+          element={<Cart />}
+        />
 
-                    <Route
-                        path="/login"
-                        element={<Login />}
-                    />
+        <Route
+          path="/login"
+          element={<Login />}
+        />
 
-                    <Route
-                        path="/admin"
-                        element={<Admin />}
-                    />
-                </Routes>
-            </main>
-        </>
-    );
+        <Route
+          path="/admin"
+          element={<Admin />}
+        />
+      </Routes>
+    </>
+  );
 }
 
 export default App;
