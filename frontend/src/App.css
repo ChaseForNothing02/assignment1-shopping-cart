@@ -2948,3 +2948,239 @@ nav a:hover {
     align-items: flex-start;
   }
 }
+
+a,
+button,
+input,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  user-select: none;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none !important;
+}
+
+/* Consistent focus state for accessibility */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 3px solid rgba(49, 85, 255, 0.28);
+  outline-offset: 3px;
+}
+
+/* Make page transitions feel smoother */
+.page,
+.simple-home,
+.products-section,
+.cart-section,
+.auth-card,
+.admin-section {
+  animation: pageFadeIn 0.26s ease both;
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Keep main content readable on large screens */
+.page {
+  width: 100%;
+  max-width: 1200px;
+}
+
+/* Improve navbar consistency */
+nav {
+  transition:
+    box-shadow 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+nav:hover {
+  background: rgba(255, 255, 255, 0.88);
+  border-color: rgba(191, 219, 254, 0.95);
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.1);
+}
+
+/* Prevent long text from breaking layouts */
+.card,
+.cart-item,
+.admin-cart-card,
+.admin-item-card,
+.auth-card,
+.products-section,
+.cart-section,
+.admin-section {
+  overflow-wrap: anywhere;
+}
+
+/* Consistent button press feedback */
+.primary-button:active,
+.secondary-button:active,
+.add-button:active,
+.checkout-button:active,
+.view-cart-button:active,
+.view-products-button:active,
+.clear-cart-button:active,
+.remove-button:active,
+.switch-auth-button:active,
+.small-button:active {
+  transform: scale(0.98);
+}
+
+/* Consistent card hover refinement */
+.card,
+.cart-item,
+.admin-cart-card,
+.admin-item-card,
+.auth-card,
+.products-section,
+.cart-section,
+.admin-section {
+  will-change: transform;
+}
+
+/* Better spacing for all major page sections */
+.products-section,
+.cart-section,
+.auth-card,
+.admin-section {
+  scroll-margin-top: 96px;
+}
+
+/* Improve form readability */
+input,
+select {
+  appearance: none;
+}
+
+select {
+  background-image:
+    linear-gradient(45deg, transparent 50%, #64748b 50%),
+    linear-gradient(135deg, #64748b 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) 50%,
+    calc(100% - 13px) 50%;
+  background-size:
+    5px 5px,
+    5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 40px !important;
+}
+
+/* Tablet polish */
+@media (max-width: 900px) {
+  .page {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .products-section,
+  .cart-section,
+  .auth-card,
+  .admin-section {
+    box-shadow: 0 18px 48px rgba(15, 23, 42, 0.09);
+  }
+}
+
+/* Mobile polish */
+@media (max-width: 640px) {
+  body {
+    background:
+      radial-gradient(circle at 50% 0%, rgba(79, 108, 255, 0.16), transparent 30%),
+      linear-gradient(180deg, #eef4ff 0%, #e7eef8 100%);
+  }
+
+  nav {
+    width: calc(100% - 20px);
+    justify-content: center;
+  }
+
+  nav a {
+    flex: 1 1 auto;
+    text-align: center;
+  }
+
+  .page {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .simple-home-content,
+  .products-section,
+  .cart-section,
+  .auth-card.mobile-auth-card,
+  .admin-section {
+    border-radius: 24px;
+  }
+
+  .products-section,
+  .cart-section,
+  .admin-section {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .primary-button,
+  .secondary-button,
+  .add-button,
+  .checkout-button,
+  .view-cart-button,
+  .view-products-button,
+  .switch-auth-button,
+  .clear-cart-button,
+  .remove-button {
+    min-height: 52px;
+  }
+
+  .modal {
+    border-radius: 22px;
+  }
+}
+
+/* Very small phone polish */
+@media (max-width: 380px) {
+  nav {
+    gap: 4px;
+    padding: 5px;
+  }
+
+  nav a {
+    padding: 7px 8px;
+    font-size: 12px;
+  }
+
+  .easybuy-title {
+    font-size: 48px;
+  }
+
+  .products-section h2,
+  .cart-header h2,
+  .admin-header h2,
+  .auth-card h2 {
+    font-size: 30px;
+  }
+
+  .summary-value {
+    font-size: 42px;
+  }
+
+  .admin-total-box strong {
+    font-size: 30px;
+  }
+}
