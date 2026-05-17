@@ -1861,3 +1861,200 @@ button:hover {
     #374151
   );
 }
+/* =====================================================
+   Commit 2 - Home page only UI optimisation
+   Add this at the very bottom of App.css
+   ===================================================== */
+
+/* Remove the old narrow page feeling on home screen */
+body {
+  background:
+    radial-gradient(circle at 20% 15%, rgba(79, 108, 255, 0.16), transparent 28%),
+    linear-gradient(180deg, #eef4ff 0%, #dfe9f7 100%);
+}
+
+/* Only improve the top nav visual */
+nav {
+  position: sticky;
+  top: 14px;
+  z-index: 50;
+
+  width: fit-content;
+  max-width: calc(100% - 32px);
+  margin: 14px auto 0;
+  padding: 8px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(203, 213, 225, 0.75);
+  border-radius: 999px;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(14px);
+}
+
+nav a {
+  padding: 9px 14px;
+  border-radius: 999px;
+
+  color: #475569;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+
+  transition: 0.18s ease;
+}
+
+nav a:hover {
+  color: #3155ff;
+  background: #eef2ff;
+  transform: translateY(-1px);
+}
+
+/* Home page container */
+.simple-home {
+  min-height: calc(100vh - 88px);
+  padding: 36px 20px 72px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+}
+
+/* Home page glass card */
+.simple-home-content {
+  width: min(440px, 100%);
+  margin: 0 auto;
+  padding: 46px 34px 40px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+
+  border-radius: 34px;
+  background: rgba(255, 255, 255, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow: 0 26px 70px rgba(49, 85, 255, 0.13);
+  backdrop-filter: blur(18px);
+}
+
+/* Main title */
+.easybuy-title {
+  margin: 0;
+  font-size: clamp(56px, 7vw, 78px);
+  line-height: 0.95;
+  font-weight: 900;
+  letter-spacing: -0.06em;
+
+  color: #3155ff;
+  text-shadow: 0 10px 28px rgba(49, 85, 255, 0.16);
+}
+
+/* Subtitle */
+.easybuy-subtitle {
+  margin: 18px 0 34px;
+
+  font-size: 18px;
+  line-height: 1.6;
+  font-weight: 500;
+  color: #64748b;
+}
+
+/* Button group */
+.home-buttons {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  margin-top: 0;
+}
+
+.home-buttons a {
+  width: 100%;
+  text-decoration: none;
+}
+
+.home-buttons button {
+  width: 100%;
+  min-height: 56px;
+
+  border-radius: 17px;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+/* Primary login button */
+.primary-button {
+  border: none;
+  background: linear-gradient(135deg, #4f6cff 0%, #6d5dfc 100%);
+  color: white;
+  box-shadow: 0 16px 30px rgba(79, 108, 255, 0.3);
+}
+
+/* Register button */
+.secondary-button {
+  border: 1px solid rgba(203, 213, 225, 0.75);
+  background: rgba(255, 255, 255, 0.58);
+  color: #3155ff;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.06);
+}
+
+.primary-button:hover,
+.secondary-button:hover {
+  transform: translateY(-2px);
+}
+
+.primary-button:active,
+.secondary-button:active {
+  transform: translateY(0);
+}
+
+/* Mobile optimisation */
+@media (max-width: 640px) {
+  nav {
+    top: 8px;
+    max-width: calc(100% - 20px);
+    margin-top: 8px;
+    padding: 6px;
+    border-radius: 22px;
+  }
+
+  nav a {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+
+  .simple-home {
+    min-height: calc(100vh - 76px);
+    padding: 72px 16px 48px;
+    align-items: flex-start;
+  }
+
+  .simple-home-content {
+    width: 100%;
+    padding: 38px 22px 32px;
+    border-radius: 28px;
+  }
+
+  .easybuy-title {
+    font-size: 54px;
+  }
+
+  .easybuy-subtitle {
+    margin: 16px 0 30px;
+    font-size: 16px;
+  }
+
+  .home-buttons button {
+    min-height: 54px;
+  }
+}
