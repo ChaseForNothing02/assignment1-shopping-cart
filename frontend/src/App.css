@@ -2058,3 +2058,34 @@ nav a:hover {
     min-height: 54px;
   }
 }
+@media (max-width: 640px) {
+  nav a {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+
+  .simple-home {
+    min-height: calc(100vh - 76px);
+    padding: 72px 16px 48px;
+    align-items: flex-start;
+  }
+
+  .simple-home-content {
+    width: 100%;
+    padding: 38px 22px 32px;
+    border-radius: 28px;
+  }
+
+  .easybuy-title {
+    font-size: 54px;
+  }
+
+  .easybuy-subtitle {
+    margin: 16px 0 30px;
+    font-size: 16px;
+  }
+
+  .home-buttons button {
+    min-height: 54px;
+  }
+}
